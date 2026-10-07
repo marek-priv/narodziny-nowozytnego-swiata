@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Historyczny — Narodziny nowożytnego świata · klasa 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f1e7;
+    --card: #fffdf8;
+    --ink: #2a2118;
+    --ink-soft: #6b5d4f;
+    --ink-faint: #9a8b7a;
+    --line: #e8ddc9;
+    --navy: #5b3a1e;
+    --navy-soft: #7a5029;
+    --accent: #c8952e;
+    --green: #16a34a;
+    --green-bg: #e7f6ec;
+    --red: #dc2626;
+    --red-bg: #fdecec;
+    --radius: 16px;
+    --shadow: 0 1px 3px rgba(60,40,15,.08), 0 10px 30px rgba(60,40,15,.09);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(1100px 460px at 85% -10%, rgba(200,149,46,.13), transparent 60%),
+      radial-gradient(800px 400px at -10% 110%, rgba(91,58,30,.07), transparent 60%);
+    color: var(--ink);
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: clip;
+    padding: 28px 16px 64px;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  /* ---------- header ---------- */
+  .brand {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
+  }
+  .brand .logo {
+    width: 42px; height: 42px; border-radius: 12px; flex: none;
+    background: linear-gradient(135deg, var(--navy), var(--navy-soft));
+    color: #f4d98c; display: grid; place-items: center;
+    font-weight: 800; font-size: 20px;
+    box-shadow: 0 4px 14px rgba(91,58,30,.35);
+  }
+  .brand h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(17px, 3.6vw, 21px); font-weight: 800; letter-spacing: .2px;
+  }
+  .brand p { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+
+  /* ---------- card ---------- */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: clamp(18px, 4vw, 30px);
+    animation: rise .3s ease;
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- progress ---------- */
+  .progress-top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    flex-wrap: wrap; gap: 2px 10px;
+    font-size: 12px; font-weight: 700; color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+  .progress-top .mod { color: var(--navy-soft); text-transform: uppercase; letter-spacing: .5px; font-size: 10.5px; }
+  .bar { height: 8px; background: #ece4d3; border-radius: 999px; overflow: hidden; margin-bottom: 20px; }
+  .bar i {
+    display: block; height: 100%; border-radius: 999px;
+    background: linear-gradient(90deg, var(--navy-soft), var(--accent));
+    width: 0; transition: width .35s ease;
+  }
+
+  /* ---------- question ---------- */
+  .q-text { font-size: clamp(16px, 3.6vw, 19px); font-weight: 700; line-height: 1.4; margin-bottom: 18px; overflow-wrap: break-word; }
+  .opts { display: grid; gap: 10px; }
+  .opt {
+    display: flex; align-items: center; gap: 12px; text-align: left;
+    border: 1.5px solid var(--line); border-radius: 12px;
+    background: #fdfbf5; padding: 13px 15px;
+    font: inherit; font-size: 14px; font-weight: 600; color: var(--ink);
+    cursor: pointer; transition: border-color .15s, background .15s, transform .12s;
+    overflow-wrap: break-word;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--navy-soft); background: #f7f0e0; transform: translateY(-1px); }
+  .opt:disabled { cursor: default; }
+  .opt .key {
+    flex: none; width: 28px; height: 28px; border-radius: 8px;
+    background: #ece4d3; color: var(--ink-soft);
+    display: grid; place-items: center; font-size: 12px; font-weight: 800;
+  }
+  .opt.correct { border-color: var(--green); background: var(--green-bg); }
+  .opt.correct .key { background: var(--green); color: #fff; }
+  .opt.wrong { border-color: var(--red); background: var(--red-bg); }
+  .opt.wrong .key { background: var(--red); color: #fff; }
+  .opt.dim { opacity: .55; }
+
+  /* ---------- explanation ---------- */
+  .expl {
+    margin-top: 16px; border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--line); animation: rise .3s ease;
+  }
+  .expl .expl-head {
+    padding: 10px 15px; font-size: 12.5px; font-weight: 800;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .expl.ok .expl-head { background: var(--green-bg); color: var(--green); }
+  .expl.bad .expl-head { background: var(--red-bg); color: var(--red); }
+  .expl .expl-body {
+    padding: 12px 15px; font-size: 13px; color: var(--ink-soft); line-height: 1.55;
+    background: #fdfbf5;
+  }
+  .expl .expl-body b { color: var(--ink); }
+  .next-row { margin-top: 16px; display: flex; justify-content: flex-end; }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    font: inherit; font-weight: 700; font-size: 14px; cursor: pointer;
+    border-radius: 10px; padding: 11px 20px; border: none;
+    max-width: 100%;
+    transition: transform .12s, box-shadow .15s, background .15s;
+  }
+  .btn-primary { background: var(--navy); color: #fff; box-shadow: 0 4px 14px rgba(91,58,30,.30); }
+  .btn-primary:hover { background: var(--navy-soft); transform: translateY(-1px); }
+  .btn-ghost { background: #f0e9d8; color: var(--ink); }
+  .btn-ghost:hover { background: #e8dfc9; }
+
+  /* ---------- start screen ---------- */
+  .start-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 55%, #9a6b32 100%);
+    border-radius: 12px; color: #fff; padding: 22px; margin-bottom: 18px;
+  }
+  .start-hero h2 { font-family: "Playfair Display", Georgia, serif; font-size: clamp(19px, 4.6vw, 25px); font-weight: 800; }
+  .start-hero p { margin-top: 6px; font-size: 13px; color: #ecdcc0; }
+  .modlist { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 18px; }
+  .modlist span {
+    font-size: 11px; font-weight: 600; color: var(--ink-soft);
+    background: #f0e9d8; border-radius: 999px; padding: 4px 11px;
+  }
+  .start-row { display: flex; justify-content: center; }
+
+  /* ---------- results ---------- */
+  .result-grid { display: grid; grid-template-columns: 130px 1fr; gap: 18px; align-items: center; }
+  .donut { position: relative; width: 130px; height: 130px; }
+  .donut svg { transform: rotate(-90deg); }
+  .donut .pct {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    flex-direction: column; text-align: center;
+  }
+  .donut .pct b { font-size: 26px; font-weight: 800; display: block; }
+  .donut .pct span { font-size: 11px; color: var(--ink-faint); font-weight: 600; }
+  .grade-badge {
+    display: inline-block; padding: 6px 16px; border-radius: 999px;
+    font-size: 15px; font-weight: 800; margin: 4px 0 8px;
+  }
+  .g6 { background: #eef0fe; color: #4f46e5; }
+  .g5 { background: var(--green-bg); color: var(--green); }
+  .g4 { background: #e3f3f7; color: #0e7490; }
+  .g3 { background: #fdf3e2; color: #b45309; }
+  .g2 { background: #fdeee3; color: #c2410c; }
+  .g1 { background: var(--red-bg); color: var(--red); }
+  .result-note { font-size: 13px; color: var(--ink-soft); margin-top: 4px; }
+  .result-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+
+  /* ---------- review ---------- */
+  .rev-item { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
+  .rev-item .rq { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .rev-item .ra { font-size: 12.5px; margin: 3px 0; display: flex; gap: 8px; align-items: baseline; }
+  .rev-item .ra .tick { font-weight: 800; width: 16px; flex: none; }
+  .ra.good { color: var(--green); }
+  .ra.bad { color: var(--red); }
+  .rev-item .re { margin-top: 8px; font-size: 12px; color: var(--ink-soft); background: #fdfbf5; border-left: 3px solid var(--accent); padding: 8px 10px; border-radius: 0 8px 8px 0; }
+  .rev-num { font-size: 10.5px; font-weight: 800; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+
+  .hidden { display: none !important; }
+  footer { margin-top: 22px; text-align: center; font-size: 11px; color: var(--ink-faint); }
+
+  @media (max-width: 560px) {
+    body { padding: 16px 10px 48px; }
+    .result-grid { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+    .result-actions { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="brand">
+    <div class="logo">🗺️</div>
+    <div>
+      <h1>Narodziny nowożytnego świata</h1>
+      <p>Historia · klasa 6 szkoły podstawowej · powtórka przed sprawdzianem</p>
+    </div>
+  </header>
+
+  <!-- ================= START ================= -->
+  <section class="card" id="screen-start">
+    <div class="start-hero">
+      <h2>Narodziny nowożytnego świata</h2>
+      <p>15 pytań sprawdzających wiedzę z całego działu — od wielkich odkryć po reformację.</p>
+    </div>
+    <div class="modlist">
+      <span>Wielkie odkrycia geograficzne</span><span>Cywilizacje prekolumbijskie</span>
+      <span>Konkwista</span><span>Renesans</span><span>Reformacja</span>
+    </div>
+    <div class="start-row">
+      <button class="btn btn-primary" id="btn-start">Rozpocznij quiz →</button>
+    </div>
+  </section>
+
+  <!-- ================= QUIZ ================= -->
+  <section class="card hidden" id="screen-quiz">
+    <div class="progress-top">
+      <span class="mod" id="q-mod"></span>
+      <span id="q-count"></span>
+    </div>
+    <div class="bar"><i id="q-bar"></i></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="opts" id="q-opts"></div>
+    <div id="q-expl"></div>
+    <div class="next-row hidden" id="q-nextrow">
+      <button class="btn btn-primary" id="btn-next">Następne pytanie →</button>
+    </div>
+  </section>
+
+  <!-- ================= RESULTS ================= -->
+  <section class="card hidden" id="screen-result">
+    <h2 style="font-size:20px;font-weight:800;margin-bottom:16px">Twój wynik</h2>
+    <div class="result-grid">
+      <div class="donut">
+        <svg width="130" height="130">
+          <circle cx="65" cy="65" r="56" fill="none" stroke="#ece4d3" stroke-width="12"/>
+          <circle id="donut-arc" cx="65" cy="65" r="56" fill="none" stroke="#16a34a" stroke-width="12"
+                  stroke-linecap="round" stroke-dasharray="351.9" stroke-dashoffset="351.9"/>
+        </svg>
+        <div class="pct"><b id="res-pct">0%</b><span id="res-pts"></span></div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.5px">Ocena szkolna</div>
+        <span class="grade-badge g3" id="res-grade">—</span>
+        <div class="result-note" id="res-note"></div>
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-primary" id="btn-restart">Spróbuj ponownie</button>
+      <button class="btn btn-ghost" id="btn-review">Przegląd odpowiedzi</button>
+    </div>
+  </section>
+
+  <!-- ================= REVIEW ================= -->
+  <section class="card hidden" id="screen-review">
+    <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">Przegląd odpowiedzi</h2>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:16px" id="rev-sub"></p>
+    <div id="rev-list"></div>
+    <div class="result-actions">
+      <button class="btn btn-primary" id="btn-again">Spróbuj ponownie</button>
+      <button class="btn btn-ghost" id="btn-back">Wróć do wyniku</button>
+    </div>
+  </section>
+
+  <footer>Materiał edukacyjny · powtórka do działu „Narodziny nowożytnego świata”</footer>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    mod: "Wielkie odkrycia geograficzne",
+    q: "Jaka była główna przyczyna wielkich odkryć geograficznych w XV–XVI w.?",
+    opts: [
+      "Chęć udowodnienia, że Ziemia jest płaska",
+      "Poszukiwanie morskiej drogi do Indii oraz brak złota i srebra w Europie",
+      "Ucieczka rycerzy przed wyrokami inkwizycji",
+      "Poszukiwanie legendarnych potworów morskich"
+    ],
+    a: 1,
+    expl: "Europejczykom zaczęło brakować <b>kruszców</b> (złota, srebra), a droga lądowa do Indii po zdobyciu Konstantynopola przez Turków (1453) stała się niebezpieczna i droga. Szukano więc <b>morskiej drogi do Indii</b> — po przyprawy, jedwab i klejnoty. Ważne była też ciekawość świata i chęć chrystianizacji."
+  },
+  {
+    mod: "Wielkie odkrycia geograficzne",
+    q: "Które wynalazki umożliwiły żeglugę oceaniczną z dala od brzegów?",
+    opts: [
+      "Druk i papier",
+      "Karawela, kompas, astrolabium i kwadrant",
+      "Parowóz i telegraf",
+      "Luneta i barometr"
+    ],
+    a: 1,
+    expl: "Odkrycia były możliwe dzięki technice: <b>karawela</b> — lekki, zwrotny żaglowiec; <b>kompas</b> — kierunek bez widocznego lądu; <b>astrolabium i kwadrant</b> — wyznaczanie szerokości geograficznej po położeniu gwiazd i Słońca."
+  },
+  {
+    mod: "Wielkie odkrycia geograficzne",
+    q: "W 1492 r. Krzysztof Kolumb:",
+    opts: [
+      "opłynął Ziemię",
+      "dopłynął do Indii wokół Afryki",
+      "dopłynął do wysp Ameryki, myśląc że to Indie",
+      "opłynął Afrykę i dotarł do Przylądka Dobrej Nadziei"
+    ],
+    a: 2,
+    expl: "<b>12 października 1492 r.</b> Kolumb, płynący na zachód pod flagą Hiszpanii, dotarł do Bahamów i wysp Karaibów — aż do śmierci twierdził, że to Indie (stąd „Indianie”). Odkrycie Ameryki zmieniło historię świata, choć sam Kolumb nie wiedział, co odkrył."
+  },
+  {
+    mod: "Wielkie odkrycia geograficzne",
+    q: "Który żeglarz w 1498 r. jako pierwszy dotarł morzem do Indii?",
+    opts: ["Bartłomiej Diaz", "Ferdynand Magellan", "Vasco da Gama", "Krzysztof Kolumb"],
+    a: 2,
+    expl: "<b>Vasco da Gama</b> dopłynął do Indii w <b>1498 r.</b>, opływając Afrykę i Przylądek Dobrej Nadziei. Dopiął celu, którego szukał Kolumb. Rok wcześniej szlak ten „otworzył” dla niego Diaz — w <b>1488 r.</b> jako pierwszy opłynął Przylądek Dobrej Nadziei."
+  },
+  {
+    mod: "Wielkie odkrycia geograficzne",
+    q: "Wyprawa Ferdynanda Magellana (1519–1522) przeszła do historii jako:",
+    opts: [
+      "pierwsze lądowanie w Ameryce Północnej",
+      "pierwsze opłynięcie Ziemi",
+      "zdobycie Konstantynopola",
+      "odkrycie Australii"
+    ],
+    a: 1,
+    expl: "Magellan wypłynął w <b>1519 r.</b> z pięcioma okrętami. Sam zginął na Filipinach w 1521 r., ale ekspedycję dokończył Juan Sebastián Elcano — w <b>1522 r.</b> wrócił do Hiszpanii jedynym okrętem, „Victorią”. To <b>pierwsze udokumentowane opłynięcie Ziemi</b> i dowód jej kulistości."
+  },
+  {
+    mod: "Cywilizacje prekolumbijskie",
+    q: "Które cywilizacje prekolumbijskie zamieszkiwały Ameryki przed przybyciem Europejczyków?",
+    opts: [
+      "Wikingowie, Normanowie, Celtowie",
+      "Majowie, Aztekowie i Inkowie",
+      "Egipcjanie, Sumerowie, Fenicjanie",
+      "Warsowie, Asyryjczycy, Hetyci"
+    ],
+    a: 1,
+    expl: "Trzy wielkie kultury: <b>Majowie</b> (Jukatan — kalendarz, pismo, astronomia), <b>Aztekowie</b> (Mejsyko — stolica Tenochtitlan), <b>Inkowie</b> (Andy — ogromne imperium z Machu Picchu). Rozwinęły się bez kontaktu ze Starym Światem."
+  },
+  {
+    mod: "Konkwista",
+    q: "Który konkwistador podbił imperium Azteków, a który Inków?",
+    opts: [
+      "Pizarro — Aztekowie, Cortés — Inkowie",
+      "Cortés — Aztekowie, Pizarro — Inkowie",
+      "Kolumb — Aztekowie, Vespucci — Inkowie",
+      "Balboa — Aztekowie, Magellan — Inkowie"
+    ],
+    a: 1,
+    expl: "<b>Hernán Cortés</b> zdobył Tenochtitlan i imperium Azteków (1519–1521); <b>Francisco Pizarro</b> podbił Inków (1532–1533). Konkwistadorom sprzyjały broń palna, konie, armatura — oraz sojusze z plemionami wrogimi Aztekom i niesione przez nich choroby."
+  },
+  {
+    mod: "Konkwista",
+    q: "Jakie były skutki wielkich odkryć dla tubylczej ludności Ameryk?",
+    opts: [
+      "Wyłącznie pozytywne — rozwój handlu i nauki",
+      "Niszczenie kultur, niewolnictwo i choroby przywiezione z Europy",
+      "Ludność tubylcza przejęła władzę nad Hiszpanią",
+      "Żadne — odkrycia nie wpłynęły na mieszkańców Ameryk"
+    ],
+    a: 1,
+    expl: "Konkwista przyniosła <b>katastrofę</b>: niszczenie miast i kultur, niewolnictwo, masakry oraz choroby (osba, odra), na które tubylcy nie mieli odporności — zginęły miliony. Europie odkrycia dały złoto, srebro i nowe rośliny (ziemniaki, kukurydza, pomidory, tytoń, kakao)."
+  },
+  {
+    mod: "Renesans",
+    q: "Czym był humanizm — nurt światopoglądowy renesansu?",
+    opts: [
+      "Zwrotem ku średniowiecznej wierze w przeznaczenie",
+      "Ideą stawiającą w centrum człowieka, jego rozwój i nawiązującą do kultury antycznej",
+      "Zakazem czytania dzieł starożytnych",
+      "Doktryną o boskim pochodzeniu władzy królewskiej"
+    ],
+    a: 1,
+    expl: "<b>Humanizm</b> (z łac. humanitas — człowieczeństwo) stawiał człowieka w centrum zainteresowania — godność, rozum, talent, rozwój. Hasło epoki: „Człowiekiem jestem i nic co ludzkie nie jest mi obce”. Humanistów fascynował antyk — „odrodzenie” kultury Greków i Rzymian."
+  },
+  {
+    mod: "Renesans",
+    q: "Czym wsławił się Jan Gutenberg ok. 1450 r.?",
+    opts: [
+      "Namalował „Mona Lisę”",
+      "Wynalazł druk z czcionek ruchomych",
+      "Napisał „Pochwałę głupoty”",
+      "Ustalił, że Ziemia krąży wokół Słońca"
+    ],
+    a: 1,
+    expl: "<b>Jan Gutenberg</b> z Moguncji wynalazł ok. <b>1450 r.</b> druk z ruchomych czcionek. Książki stały się tańsze i dostępne dla mas — wiedza, nauka i pomysły (w tym reformacji!) mogły się rozpowszechniać błyskawicznie. Rewolucja informacyjna XV wieku."
+  },
+  {
+    mod: "Renesans",
+    q: "Kto był typowym „człowiekiem renesansu” — artystą, naukowcem i wynalazcą w jednej osobie?",
+    opts: [
+      "Erazm z Rotterdamu",
+      "Leonardo da Vinci",
+      "Marcin Luter",
+      "Ignacy Loyola"
+    ],
+    a: 1,
+    expl: "<b>Leonardo da Vinci</b> — malarz („Mona Lisa”, „Ostatnia Wieczerza”), anatonom, inżynier i wynalazca — uosabiał ideał uomo universale. Wśród gigantów epoki także Michał Anioł (kaplica Sykstyńska), Erazm z Rotterdamu (humanista) i nasz Mikołaj Kopernik (teoria heliocentryczna)."
+  },
+  {
+    mod: "Reformacja",
+    q: "Co zrobił Marcin Luter w 1517 r. w Wittenberdze?",
+    opts: [
+      "Koronował się na papieża",
+      "Wybił na drzwiach kościoła 95 tez przeciwko sprzedaży odpustów",
+      "Założył zakon jezuitów",
+      "Ogłosił niepodległość Anglii"
+    ],
+    a: 1,
+    expl: "<b>31 października 1517 r.</b> mnich Marcin Luter ogłosił <b>95 tez</b> przeciwko sprzedaży odpustów i nadużyciom Kościoła — zapoczątkował <b>reformację</b>. Odmówił odwołania poglądów („na tym stoję, inaczej nie mogę”), a Kościół go wyklął."
+  },
+  {
+    mod: "Reformacja",
+    q: "Jakie nowe odłamy chrześcijaństwa powstały w wyniku reformacji?",
+    opts: [
+      "Prawosławie i islam",
+      "Luteranizm, kalwinizm i anglikanizm",
+      "Katolicka ortodoksja i buddyzm",
+      "Tylko katolicyzm"
+    ],
+    a: 1,
+    expl: "Reformacja rozszczepiła zachodnie chrześcijaństwo na <b>protestantyzm</b>: <b>luteraizm</b> (Luter, Niemcy i Skandynawia), <b>kalwinizm</b> (Kalwin, Szwajcaria, część Francji), <b>anglikanizm</b> (Anglia — król Henryk VIII na czele kościoła). Protestanci odrzucali autorytet papieża."
+  },
+  {
+    mod: "Kontrreformacja",
+    q: "Jak Kościół katolicki odpowiedział na reformację?",
+    opts: [
+      "Uznał wszystkie tezy Lutra",
+      "Zwołał Sobór trydencki i powołał zakon jezuitów — kontrreformacja",
+      "Rozwiązał się na zawsze",
+      "Ogłosił krucjatę przeciw Niemcom"
+    ],
+    a: 1,
+    expl: "<b>Kontrreformacja</b>: Sobór w Trydencie (1545–1563) potwierdził naukę Kościoła i zniwelował nadużycia. Kluczowym narzędziem był <b>zakon jezuitów</b> (1540, Ignacy Loyola) — zakon „żołnierzy Kościoła”, misjonarzy i nauczycieli broniących katolicyzmu w Europie i na misjach."
+  },
+  {
+    mod: "Reformacja — skutki",
+    q: "Jakie trwałe skutki miała reformacja dla Europy?",
+    opts: [
+      "Europa stała się w pełni katolicka",
+      "Podział religijny, wojny religijne, a także rozwój szkolnictwa i druku",
+      "Zniknięcie chrześcijaństwa z Europy",
+      "Przeniesienie stolicy świata do Rzymu"
+    ],
+    a: 1,
+    expl: "Reformacja podzieliła Europę religijnie (katolicki południe vs protestancka północ) i wywołała <b>wojny religijne</b> (m.in. wojna trzydziestoletnia). Ale też rozpowszechniła <b>czytanie Biblii w językach narodowych</b>, rozwój szkół i druku — i wzmocniła katolicką kontrreformację."
+  }
+];
+
+const GRADES = [
+  { min: 100, label: "celujący (6)", cls: "g6", note: "Perfekcyjnie! Wiedza na najwyższym poziomie." },
+  { min: 90,  label: "bardzo dobry (5)", cls: "g5", note: "Świetny wynik — tylko drobne potknięcia." },
+  { min: 75,  label: "dobry (4)", cls: "g4", note: "Solidna wiedza, warto powtórzyć szczegóły." },
+  { min: 50,  label: "dostateczny (3)", cls: "g3", note: "Podstawy są, ale przeczytaj wyjaśnienia i powtórz materiał." },
+  { min: 35,  label: "dopuszczający (2)", cls: "g2", note: "Dużo do nadrobienia — sięgnij po podręcznik i spróbuj jeszcze raz." },
+  { min: 0,   label: "niedostateczny (1)", cls: "g1", note: "Nie poddawaj się! Powtórz materiał i spróbuj ponownie." }
+];
+
+const $ = id => document.getElementById(id);
+const screens = { start: $("screen-start"), quiz: $("screen-quiz"), result: $("screen-result"), review: $("screen-review") };
+const KEYS = ["A", "B", "C", "D"];
+
+let idx = 0, score = 0, answers = [];
+
+function show(name) {
+  Object.values(screens).forEach(s => s.classList.add("hidden"));
+  screens[name].classList.remove("hidden");
+  screens[name].style.animation = "none";
+  void screens[name].offsetWidth;
+  screens[name].style.animation = "";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[idx];
+  $("q-mod").textContent = q.mod;
+  $("q-count").textContent = `Pytanie ${idx + 1} z ${QUESTIONS.length}`;
+  $("q-bar").style.width = `${(idx / QUESTIONS.length) * 100}%`;
+  $("q-text").textContent = q.q;
+  $("q-expl").innerHTML = "";
+  $("q-nextrow").classList.add("hidden");
+  $("btn-next").textContent = idx === QUESTIONS.length - 1 ? "Zobacz wynik →" : "Następne pytanie →";
+
+  $("q-opts").innerHTML = q.opts.map((o, i) =>
+    `<button class="opt" data-i="${i}"><span class="key">${KEYS[i]}</span><span>${o}</span></button>`
+  ).join("");
+  $("q-opts").querySelectorAll(".opt").forEach(b =>
+    b.addEventListener("click", () => pick(+b.dataset.i)));
+}
+
+function pick(i) {
+  const q = QUESTIONS[idx];
+  answers[idx] = i;
+  const ok = i === q.a;
+  if (ok) score++;
+  $("q-opts").querySelectorAll(".opt").forEach((b, j) => {
+    b.disabled = true;
+    if (j === q.a) b.classList.add("correct");
+    else if (j === i) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+  $("q-bar").style.width = `${((idx + 1) / QUESTIONS.length) * 100}%`;
+  $("q-expl").innerHTML = `
+    <div class="expl ${ok ? "ok" : "bad"}">
+      <div class="expl-head">${ok ? "✔ Dobrze!" : "✘ Niestety — poprawna odpowiedź to " + KEYS[q.a]}</div>
+      <div class="expl-body"><b>Historyczny kącik:</b> ${q.expl}</div>
+    </div>`;
+  $("q-nextrow").classList.remove("hidden");
+  $("q-expl").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function gradeFor(pct) {
+  return GRADES.find(g => pct >= g.min);
+}
+
+function showResults() {
+  const pct = Math.round((score / QUESTIONS.length) * 100);
+  const g = gradeFor(pct);
+  $("res-pct").textContent = pct + "%";
+  $("res-pts").textContent = `${score}/${QUESTIONS.length} punktów`;
+  const badge = $("res-grade");
+  badge.textContent = g.label;
+  badge.className = "grade-badge " + g.cls;
+  $("res-note").textContent = g.note;
+  const arc = $("donut-arc");
+  const circ = 2 * Math.PI * 56;
+  arc.style.strokeDasharray = circ;
+  arc.style.stroke = pct >= 50 ? "#16a34a" : pct >= 35 ? "#f59e0b" : "#dc2626";
+  arc.style.transition = "none";
+  arc.style.strokeDashoffset = circ;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    arc.style.transition = "stroke-dashoffset .9s ease";
+    arc.style.strokeDashoffset = circ * (1 - pct / 100);
+  }));
+  show("result");
+}
+
+function renderReview() {
+  $("rev-sub").textContent = `Twój wynik: ${score}/${QUESTIONS.length} — kliknij „Spróbuj ponownie”, aby zagrać jeszcze raz.`;
+  $("rev-list").innerHTML = QUESTIONS.map((q, i) => {
+    const you = answers[i];
+    const good = you === q.a;
+    return `<div class="rev-item">
+      <div class="rev-num">Pytanie ${i + 1} · ${q.mod}</div>
+      <div class="rq">${q.q}</div>
+      <div class="ra ${good ? "good" : "bad"}"><span class="tick">${good ? "✔" : "✘"}</span>
+        <span>Twoja odpowiedź: <b>${you !== undefined ? q.opts[you] : "brak"}</b></span></div>
+      ${good ? "" : `<div class="ra good"><span class="tick">✔</span><span>Poprawna: <b>${q.opts[q.a]}</b></span></div>`}
+      <div class="re">${q.expl}</div>
+    </div>`;
+  }).join("");
+  show("review");
+}
+
+function restart() {
+  idx = 0; score = 0; answers = [];
+  renderQuestion();
+  show("quiz");
+}
+
+$("btn-start").addEventListener("click", restart);
+$("btn-next").addEventListener("click", () => {
+  if (idx < QUESTIONS.length - 1) { idx++; renderQuestion(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  else showResults();
+});
+$("btn-restart").addEventListener("click", restart);
+$("btn-again").addEventListener("click", restart);
+$("btn-review").addEventListener("click", renderReview);
+$("btn-back").addEventListener("click", () => show("result"));
+</script>
+</body>
+</html>
